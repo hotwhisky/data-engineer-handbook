@@ -33,9 +33,13 @@ SELECT
                     WHEN ts.pts > 10 THEN 'average'
                     ELSE 'bad' END)::scoring_class
              ELSE ls.scoring_class
-         END as scoring_class,
-         ts.season IS NOT NULL as is_active,
-         1998 AS current_season
+         END as scoring_class
+         , CASE
+                WHEN ts.season IS NOT NULL THEN 0
+                ELSE ls.years_since_last_active + 1
+           END years_since_last_active
+         , ts.season IS NOT NULL as is_active
+         , 1998 AS current_season
 
     FROM last_season ls
     FULL OUTER JOIN this_season ts
